@@ -8,10 +8,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cross-env NODE_ENV=development gulp",
+    "start": "cross-env gulp",
     "lint": "cross-env eslint -c .eslintrc.json app/src/assets/js/**/*",
-    "build": "cross-env NODE_ENV=development gulp build",
-    "release": "cross-env NODE_ENV=production gulp release",
+    "build": "cross-env gulp build",
+    "release": "cross-env gulp release",
     "server": "cross-env browser-sync start -s './app/_release' --port 8000"
   },
   "keywords": [],
@@ -47,7 +47,7 @@
     "gulp-sourcemaps": "^1.9.1",
     "modernizr-loader": "0.0.5",
     "run-sequence": "^2.1.0",
-    "webpack": "^3.5.5",
+    "webpack": "^4.5.0",
     "webpack-stream": "^4.0.0"
   },
   "dependencies": {
