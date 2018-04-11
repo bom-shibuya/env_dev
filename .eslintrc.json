@@ -8,6 +8,7 @@
   },
   "env": {
     "es6": true,
+    "commonjs": true,
     "browser": true,
     "mocha": true,
     "node": true
@@ -201,7 +202,7 @@
     "import/newline-after-import": 2,
     "import/no-duplicates": 2,
     "import/no-unresolved": 2,
-    "import/unambiguous": 2,
+    "import/unambiguous": 0,
 
     "prefer-object-spread/prefer-object-spread": 2
   }

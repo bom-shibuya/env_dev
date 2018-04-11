@@ -7,12 +7,10 @@ import 'babel-polyfill';
 //   TweenMax,
 //   TweenLite
 // } from 'gsap';
-// import ScrollToPlugin from 'ScrollToPlugin';
-// import EasePack from 'EasePack';
+// import 'gsap/ScrollToPlugin';
+// import 'gsap/EasePack';
 // import modernizr from 'modernizr';
 //
 // console.log(modernizr);
 
-$(() => {
-
-});
+window.addEventListener('DOMContentLoaded', () => {});
