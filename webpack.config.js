@@ -27,7 +27,7 @@ const DIR = DirectoryManager('./');
  */
 const commonConfig = {
   entry: {
-    script: DIR.src_assets + 'js/script.js'
+    script: DIR.SRC_ASSETS + 'js/script.js'
   },
   output: {
     filename: '[name].js'
