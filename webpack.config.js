@@ -13,14 +13,7 @@
  */
 const webpack = require('webpack');
 const Path = require('path');
-const DirectoryManager = require('./DirectoryManager.js');
-
-
-/**
- * Directory settings.
- */
-const DIR = DirectoryManager('./');
-
+const DIR = require('./DIR.js')('./');
 
 /**
  * common config
