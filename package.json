@@ -29,7 +29,6 @@
     "babel-preset-env": "^1.6.0",
     "browser-sync": "^2.12.8",
     "cross-env": "^5.1.4",
-    "date-utils": "^1.2.21",
     "del": "^3.0.0",
     "eslint": "^4.5.0",
     "eslint-plugin-import": "^2.7.0",
