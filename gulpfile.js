@@ -1,42 +1,40 @@
 'use strict';
 
 /*
-      ██████╗ ██╗   ██╗██╗     ██████╗
-      ██╔════╝ ██║   ██║██║     ██╔══██╗
-      ██║  ███╗██║   ██║██║     ██████╔╝
-      ██║   ██║██║   ██║██║     ██╔═══╝
-      ╚██████╔╝╚██████╔╝███████╗██║
+    ██████╗ ██╗   ██╗██╗     ██████╗
+    ██╔════╝ ██║   ██║██║     ██╔══██╗
+    ██║  ███╗██║   ██║██║     ██████╔╝
+    ██║   ██║██║   ██║██║     ██╔═══╝
+    ╚██████╔╝╚██████╔╝███████╗██║
       ╚═════╝  ╚═════╝ ╚══════╝╚═╝
  */
 
 // module import
-import gulp from 'gulp';
-import browserSync from 'browser-sync';
-import dateUtils from 'date-utils'; // 日付をフォーマット
-import insert from 'gulp-insert'; // 挿入
-import plumber from 'gulp-plumber'; // エラー起きても止まらない
-import pug from 'gulp-pug'; // 可愛いパグを処理するやつ
-import fileinclude from 'gulp-file-include'; // file include 使いたい時のために一応置いとく
-import runSequence from 'run-sequence'; // タスクの処理順序の担保
-import imagemin from 'gulp-imagemin'; // 画像圧縮
-import sass from 'gulp-sass'; // sass!!!
-import sassGlob from 'gulp-sass-glob'; // sass!!!
-import sourcemaps from'gulp-sourcemaps'; // sassのソースマップ吐かせる
-import please from 'gulp-pleeease'; // sass周りのいろいろ
-import webpack from 'webpack'; // js関係のことを今回やらせます。
-import webpackStream from 'webpack-stream'; // webpack2をつかうためのもの
-import webpackConfig from './webpack.config.babel.js'; // webpackの設定ファイル
-import minimist from 'minimist'; // タスク実行時に引数を渡す
-import del from 'del'; // clean task用
-import DirectoryManager from './DirectoryManager.js'; // directory 共通化用
+const gulp = require('gulp');
+const browserSync = require('browser-sync');
+const insert = require('gulp-insert');
+const plumber = require('gulp-plumber');
+const pug = require('gulp-pug');
+const fileinclude = require('gulp-file-include');
+const runSequence = require('run-sequence');
+const imagemin = require('gulp-imagemin');
+const sass = require('gulp-sass');
+const sassGlob = require('gulp-sass-glob');
+const sourcemaps = require('gulp-sourcemaps');
+const please = require('gulp-pleeease');
+const webpack = require('webpack');
+const webpackStream = require('webpack-stream');
+const webpackConfig = require('./webpack.config.js');
+const del = require('del');
+const DirectoryManager = require('./DirectoryManager.js');
+require('date-utils');
 
 const DIR = DirectoryManager();
-const HTML_TASK = 'fileinclude'; // pug or fileinclude
+// pug or fileinclude
+const HTML_TASK = 'fileinclude';
 
 // *********** COMMON METHOD ***********
 
-// 実行時の引数取得
-const args = minimist(process.argv.slice(2));
 
 // 現在時刻の取得
 const fmtdDate = new Date().toFormat('YYYY-MM-DD HH24MISS');
@@ -44,8 +42,6 @@ const fmtdDate = new Date().toFormat('YYYY-MM-DD HH24MISS');
 // clean
 let cleanDIR;
 gulp.task('clean', cb => {
-  // if(args.clean) return del([cleanDIR], cb);
-  // return cb();
   return del([cleanDIR], cb);
 });
 
@@ -171,7 +167,7 @@ gulp.task('default', ()=> {
 // *********** RELEASE TASK ***********
 
 // css
-gulp.task('release_CSS', ()=> {
+gulp.task('prodStyle', ()=> {
   return gulp.src(DIR.dest_assets + 'css/*.css')
   .pipe(please({
     sass: false,
@@ -184,13 +180,13 @@ gulp.task('release_CSS', ()=> {
 });
 
 // js conat
-gulp.task('release_JS', () => {
+gulp.task('prodScript', () => {
   return webpackStream(webpackConfig.prod, webpack)
   .pipe(gulp.dest(DIR.release_assets + 'js'));
 });
 
 // releaesへcopy
-gulp.task('release_COPY', ()=> {
+gulp.task('prodCopy', ()=> {
   // img
   gulp.src(DIR.dest_assets + 'img/**/*.{jpg,png,gif,svg,ico}')
   .pipe(gulp.dest(DIR.release_assets + 'img/'));
@@ -204,6 +200,6 @@ gulp.task('release', ()=>{
   cleanDIR = DIR.release;
   runSequence(
     'clean',
-    ['release_CSS', 'release_JS', 'release_COPY']
+    ['prodStyle', 'prodScript', 'prodCopy']
   );
 });
