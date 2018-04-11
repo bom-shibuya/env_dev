@@ -1,5 +1,4 @@
-// *********** DIRECTORY ***********
-const DirectoryManager = path => {
+module.exports = function DirectoryManager(path) {
   const basePath = path || '';
   return {
     src: basePath + 'app/src/',
@@ -10,5 +9,3 @@ const DirectoryManager = path => {
     release_assets: basePath + 'app/_release/assets/'
   };
 };
-
-export default DirectoryManager;
