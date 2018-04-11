@@ -13,6 +13,4 @@ import 'babel-polyfill';
 //
 // console.log(modernizr);
 
-window.addEventListener('DOMContentLoaded', () => {
-
-});
+window.addEventListener('DOMContentLoaded', () => {});
