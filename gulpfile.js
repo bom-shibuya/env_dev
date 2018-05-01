@@ -16,6 +16,7 @@ const insert = require('gulp-insert');
 const plumber = require('gulp-plumber');
 const pug = require('gulp-pug');
 const fileinclude = require('gulp-file-include');
+const ejs = require('gulp-ejs');
 const runSequence = require('run-sequence');
 const imagemin = require('gulp-imagemin');
 const sass = require('gulp-sass');
@@ -25,12 +26,13 @@ const please = require('gulp-pleeease');
 const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
 const webpackConfig = require('./webpack.config.js');
+const Path = require('path');
 const del = require('del');
 const DIR = require('./DIR.js')();
 require('date-utils');
 
-// pug or fileinclude
-const HTML_TASK = 'fileinclude';
+// pug or fileinclude or ejs
+const HTML_TASK = 'ejs';
 
 // *********** COMMON METHOD ***********
 
@@ -126,6 +128,22 @@ gulp.task('pug', () => {
     .pipe(browserSync.stream());
 });
 
+// ejs include
+gulp.task('ejs', () => {
+  return gulp
+    .src([`${DIR.SRC}**/*.ejs`, `!${DIR.SRC}_inc/**/*.ejs`])
+    .pipe(plumber())
+    .pipe(
+      ejs(
+        { INC: Path.resolve(__dirname, `${DIR.SRC}_inc`) + '/' },
+        {},
+        { ext: '.html' }
+      )
+    )
+    .pipe(gulp.dest(DIR.DEST))
+    .pipe(browserSync.stream());
+});
+
 // imageMin
 gulp.task('imageMin', () => {
   return gulp
@@ -150,7 +168,7 @@ gulp.task('imageMin', () => {
 
 // watch
 gulp.task('watch', () => {
-  const htmlExpanded = HTML_TASK === 'pug' ? 'pug' : 'html';
+  const htmlExpanded = HTML_TASK === 'fileinclude' ? 'html' : HTML_TASK;
   gulp.watch(`${DIR.SRC}**/*.${htmlExpanded}`, [HTML_TASK]);
   gulp.watch(`${DIR.SRC_ASSETS}sass/**/*.{sass,scss}`, ['sass']);
   gulp.watch(`${DIR.SRC_ASSETS}js/**/*.js`, ['scripts']);
