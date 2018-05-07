@@ -1,0 +1,24 @@
+<% 
+  include(`${INC}data/index`)
+  data = getData();
+  meta = {
+    title: 'This is top page | '+data.siteName,
+    description: data.description,
+    type: 'website',
+    url: data.url,
+    img: data.imgPath + 'page/common/share.jpg'
+  }
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include(`${INC}templates/head`) %>
+  <%- include(`${INC}templates/meta`, {meta: meta}) %>
+</head>
+<body>
+  <%- include(`${INC}layouts/l-gHeader`) %>
+  <h1>USE EJS!!!!!!!</h1>
+  <%- include(`${INC}layouts/l-gFooter`) %>
+</body>
+</html>
