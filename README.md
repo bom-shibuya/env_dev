@@ -22,9 +22,9 @@ TOKYO SHIBUYA DEV はホームページ手作り用キットです。<br>
 ### タスクランナーなどの構成
 
 * gulp
-
+  * ejs -- html をどうこうするのに。デフォルトはこれ。
   * pug -- html をどうこうするのに
-  * gulp-file-include -- pug 使わないときのために一応置いてる。
+  * gulp-file-include -- 一応置いてる。
   * sass(scss でない)
   * pleeease -- css をいい感じに
   * webpack4 -- js をどうこうするのに
