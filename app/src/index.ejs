@@ -2,11 +2,11 @@
   include(`${INC}data/index`)
   data = getData();
   meta = {
-    title: data.siteName,
+    title: 'This is top page | '+data.siteName,
     description: data.description,
     type: 'website',
     url: data.url,
-    img: data.imgPath
+    img: data.imgPath + 'page/common/share.jpg'
   }
 %>
 
@@ -18,7 +18,7 @@
 </head>
 <body>
   <%- include(`${INC}layouts/l-gHeader`) %>
-  <h1>USE EJS!!!</h1>
+  <h1>USE EJS!!!!!!!</h1>
   <%- include(`${INC}layouts/l-gFooter`) %>
 </body>
 </html>
