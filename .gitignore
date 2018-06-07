@@ -39,4 +39,7 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
+# dest/_release images
 
+app/dest/assets/img
+app/_release/assets/img
