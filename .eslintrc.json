@@ -17,7 +17,11 @@
   "plugins": [
     "react",
     "import",
-    "prefer-object-spread"
+    "prefer-object-spread",
+    "prettier"
+  ],
+  "extends": [
+    "prettier"
   ],
   "settings": {
     "import/ignore": [
@@ -204,6 +208,11 @@
     "import/no-unresolved": 2,
     "import/unambiguous": 0,
 
-    "prefer-object-spread/prefer-object-spread": 2
+    "prefer-object-spread/prefer-object-spread": 2,
+
+    "prettier/prettier": ["error", {
+      "singleQuote": true,
+      "bracketSpacing": true
+    }]
   }
 }
