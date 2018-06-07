@@ -108,7 +108,8 @@ FREE CODE CAMP のものをパクってきて使ってます。
 
 **prettier**
 
-考えたんですが、エディタに入れてください。
+Visual studio codeならESLintプラグインを入れて、設定に"eslint.autoFixOnSave": trueするといい感じになります。  
+git commit するときにも勝手に成型かけるというかeslint通すのでエラー出たら通らないです。
 
 ### special thanks
 
