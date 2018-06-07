@@ -67,3 +67,11 @@ small,span
 .pc-displayNone
   +min-screen($pc)
     display: none
+
+.hide-pc
+  +min-screen($tablet)
+    display: none
+
+.hide-sp
+  +max-screen($sp)
+    display: none
