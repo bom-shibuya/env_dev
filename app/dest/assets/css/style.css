@@ -200,11 +200,6 @@ ol {
 small, span {
   vertical-align: baseline; }
 
-.sample {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex; }
-
 @media screen and (max-width: 47.9375em){
   .sp-displayNone{
     display: none; }

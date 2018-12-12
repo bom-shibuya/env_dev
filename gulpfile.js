@@ -14,10 +14,9 @@ const gulp = require('gulp');
 const browserSync = require('browser-sync');
 const insert = require('gulp-insert');
 const plumber = require('gulp-plumber');
-const pug = require('gulp-pug');
-const fileinclude = require('gulp-file-include');
-const ejs = require('gulp-ejs');
-const runSequence = require('run-sequence');
+const gulpPug = require('gulp-pug');
+const gulpFileinclude = require('gulp-file-include');
+const gulpEjs = require('gulp-ejs');
 const imagemin = require('gulp-imagemin');
 const sass = require('gulp-sass');
 const sassGlob = require('gulp-sass-glob');
@@ -36,19 +35,21 @@ const HTML_TASK = 'ejs';
 
 // *********** COMMON METHOD ***********
 
+// html buildタスクの拡張子
+const htmlExpanded = HTML_TASK === 'fileinclude' ? 'html' : HTML_TASK;
+
 // 現在時刻の取得
 const fmtdDate = new Date().toFormat('YYYY-MM-DD HH24MISS');
 
 // clean
-let cleanDIR;
-gulp.task('clean', cb => {
-  return del([cleanDIR], cb);
-});
+const clean = dir => {
+  return del([dir]);
+};
 
 // *********** DEVELOPMENT TASK ***********
 
 // browserSync
-gulp.task('browserSync', () => {
+const devServer = async () => {
   browserSync.init({
     server: {
       baseDir: DIR.DEST
@@ -59,11 +60,16 @@ gulp.task('browserSync', () => {
       scroll: false
     }
   });
-});
+};
+
+const reload = async fn => {
+  await fn();
+  browserSync.reload();
+};
 
 // sass
-gulp.task('sass', () => {
-  return gulp
+const styles = () =>
+  gulp
     .src(`${DIR.SRC_ASSETS}sass/**/*.{sass,scss}`)
     .pipe(sourcemaps.init())
     .pipe(plumber())
@@ -84,69 +90,66 @@ gulp.task('sass', () => {
       })
     )
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest(`${DIR.DEST_ASSETS}css`))
-    .pipe(browserSync.stream());
-});
+    .pipe(gulp.dest(`${DIR.DEST_ASSETS}css`));
 
 // js
-gulp.task('scripts', () => {
-  return gulp
+const scripts = () =>
+  gulp
     .src(`${DIR.SRC_ASSETS}js/**/*.js`)
     .pipe(plumber())
     .pipe(webpackStream(webpackConfig.dev, webpack))
-    .pipe(gulp.dest(`${DIR.DEST_ASSETS}js`))
-    .pipe(browserSync.stream());
-});
+    .pipe(gulp.dest(`${DIR.DEST_ASSETS}js`));
 
 // html include
-gulp.task('fileinclude', () => {
-  return gulp
+const fileinclude = () =>
+  gulp
     .src([`${DIR.SRC}**/*.html`, `!${DIR.SRC}_inc/**/*.html`])
     .pipe(plumber())
     .pipe(
-      fileinclude({
+      gulpFileinclude({
         prefix: '@@',
         basepath: 'app/src/_inc'
       })
     )
-    .pipe(gulp.dest(DIR.DEST))
-    .pipe(browserSync.stream());
-});
+    .pipe(gulp.dest(DIR.DEST));
 
 // pug
-gulp.task('pug', () => {
+const pug = () =>
   gulp
     .src([`${DIR.SRC}**/*.pug`, `!${DIR.SRC}_inc`, `!${DIR.SRC}_inc/**/*.pug`])
     .pipe(plumber())
     .pipe(
-      pug({
+      gulpPug({
         pretty: true,
         basedir: DIR.SRC
       })
     )
-    .pipe(gulp.dest(DIR.DEST))
-    .pipe(browserSync.stream());
-});
+    .pipe(gulp.dest(DIR.DEST));
 
 // ejs include
-gulp.task('ejs', () => {
-  return gulp
+const ejs = () =>
+  gulp
     .src([`${DIR.SRC}**/*.ejs`, `!${DIR.SRC}_inc/**/*.ejs`])
     .pipe(plumber())
     .pipe(
-      ejs(
+      gulpEjs(
         { INC: Path.resolve(__dirname, `${DIR.SRC}_inc`) + '/' },
         {},
         { ext: '.html' }
       )
     )
-    .pipe(gulp.dest(DIR.DEST))
-    .pipe(browserSync.stream());
-});
+    .pipe(gulp.dest(DIR.DEST));
+
+// bundle html task
+const html = {
+  ejs,
+  fileinclude,
+  pug
+};
 
 // imageMin
-gulp.task('imageMin', () => {
-  return gulp
+const imageMin = () =>
+  gulp
     .src(`${DIR.SRC_ASSETS}img/**/*`)
     .pipe(
       imagemin(
@@ -162,40 +165,32 @@ gulp.task('imageMin', () => {
         { verbose: true }
       )
     )
-    .pipe(gulp.dest(`${DIR.DEST_ASSETS}img`))
-    .pipe(browserSync.stream());
-});
+    .pipe(gulp.dest(`${DIR.DEST_ASSETS}img`));
 
 // watch
-gulp.task('watch', () => {
-  const htmlExpanded = HTML_TASK === 'fileinclude' ? 'html' : HTML_TASK;
-  gulp.watch(`${DIR.SRC}**/*.${htmlExpanded}`, [HTML_TASK]);
-  gulp.watch(`${DIR.SRC_ASSETS}sass/**/*.{sass,scss}`, ['sass']);
-  gulp.watch(`${DIR.SRC_ASSETS}js/**/*.js`, ['scripts']);
-});
-
-// only build
-gulp.task('build', () => {
-  cleanDIR = DIR.DEST;
-  runSequence('clean', [HTML_TASK, 'scripts', 'sass', 'imageMin']);
-});
-
-// default
-gulp.task('default', () => {
-  cleanDIR = DIR.DEST;
-  runSequence(
-    'clean',
-    [HTML_TASK, 'scripts', 'sass', 'imageMin'],
-    'browserSync',
-    'watch'
+const watch = async () => {
+  gulp.watch(
+    `${DIR.SRC}**/*.${htmlExpanded}`,
+    reload.bind(null, html[HTML_TASK])
   );
-});
+  gulp.watch(
+    `${DIR.SRC_ASSETS}sass/**/*.{sass,scss}`,
+    reload.bind(null, styles)
+  );
+  gulp.watch(`${DIR.SRC_ASSETS}js/**/*.js`, reload.bind(null, scripts));
+};
+
+const devTask = gulp.parallel(html[HTML_TASK], styles, scripts, imageMin);
+
+const build = gulp.series(clean.bind(null, DIR.DEST), devTask);
+
+const dev = gulp.series(build, devServer, watch);
 
 // *********** RELEASE TASK ***********
 
 // css
-gulp.task('prodStyle', () => {
-  return gulp
+const releaseStyles = () =>
+  gulp
     .src(`${DIR.DEST_ASSETS}css/*.css`)
     .pipe(
       please({
@@ -207,27 +202,40 @@ gulp.task('prodStyle', () => {
     )
     .pipe(insert.prepend(`/*! compiled at:${fmtdDate}*/\n`))
     .pipe(gulp.dest(`${DIR.RELEASE_ASSETS}css`));
-});
 
 // js conat
-gulp.task('prodScript', () => {
-  return webpackStream(webpackConfig.prod, webpack).pipe(
+const releaseScripts = () =>
+  webpackStream(webpackConfig.prod, webpack).pipe(
     gulp.dest(`${DIR.RELEASE_ASSETS}js`)
   );
-});
 
 // releaesへcopy
-gulp.task('prodCopy', () => {
-  // img
+const releaseImages = () =>
   gulp
     .src(`${DIR.DEST_ASSETS}img/**/*.{jpg,png,gif,svg,ico}`)
     .pipe(gulp.dest(`${DIR.RELEASE_ASSETS}img`));
-  // html
+
+const releaseHtml = () =>
   gulp.src(`${DIR.DEST}**/*.html`).pipe(gulp.dest(DIR.RELEASE));
-});
 
 // for release
-gulp.task('release', () => {
-  cleanDIR = DIR.RELEASE;
-  runSequence('clean', ['prodStyle', 'prodScript', 'prodCopy']);
-});
+
+const release = gulp.series(
+  clean.bind(null, DIR.RELEASE),
+  gulp.parallel(releaseScripts, releaseImages, releaseHtml, releaseStyles)
+);
+
+module.exports = {
+  styles,
+  scripts,
+  imageMin,
+  watch,
+  ...html,
+  default: dev,
+  build,
+  releaseHtml,
+  releaseImages,
+  releaseScripts,
+  releaseStyles,
+  release
+};
