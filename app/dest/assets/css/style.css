@@ -67,7 +67,7 @@ select,
 textarea {
   font-size: 100%;
   border: none;
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0);
   outline: none;
   color: inherit; }
 
@@ -170,7 +170,7 @@ a {
   -webkit-transition: opacity 0.4s;
   transition: opacity 0.4s;
   text-decoration: none;
-  -webkit-tap-highlight-color: transparent; }
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
   a:hover {
     opacity: 0.6;
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)"; }
@@ -207,6 +207,8 @@ small, span {
 
 @media screen and (max-width: 47.9375em){
   .sp-displayNone{
+    display: none; }
+  .hide-sp{
     display: none; } }
 
 @media screen and (max-width: 64em){
@@ -215,6 +217,8 @@ small, span {
 
 @media screen and (min-width: 48em){
   .tab-pc-displayNone{
+    display: none; }
+  .hide-pc{
     display: none; } }
 
 @media screen and (min-width: 64.001em){
