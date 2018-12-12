@@ -12,7 +12,6 @@
  * Require dependencies.
  */
 const webpack = require('webpack');
-const Path = require('path');
 const DIR = require('./DIR.js')('./');
 
 /**
@@ -27,10 +26,7 @@ const commonConfig = {
   },
   resolve: {
     extensions: ['.js'],
-    modules: ['node_modules'],
-    alias: {
-      modernizr$: Path.resolve(__dirname, '.modernizrrc')
-    }
+    modules: ['node_modules']
   },
   module: {
     rules: [
@@ -38,10 +34,6 @@ const commonConfig = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader'
-      },
-      {
-        test: /\.modernizrrc$/,
-        loader: 'modernizr-loader'
       }
     ]
   },
