@@ -104,7 +104,7 @@ eslint
 
 **eslint**
 
-FREE CODE CAMP のものをパクってきて使ってます。
+そういうわけで[JavaScript Standard Style](https://standardjs.com/)を使うことにしました。
 
 **prettier**
 
