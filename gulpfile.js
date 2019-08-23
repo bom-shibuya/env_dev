@@ -57,7 +57,7 @@ const devServer = done => {
 };
 
 const reload = done => {
-  browserSync.reload();
+  browserSync.reload({ stream: true });
   done();
 };
 

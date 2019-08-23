@@ -9,7 +9,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cross-env gulp",
-    "poststart": "cross-env gulp watch",
     "lint": "cross-env eslint -c .eslintrc.json app/src/assets/js/**/*",
     "build": "cross-env gulp build",
     "release": "cross-env gulp release",
