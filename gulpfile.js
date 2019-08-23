@@ -35,9 +35,7 @@ require('date-utils');
 const fmtdDate = new Date().toFormat('YYYY-MM-DD HH24MISS');
 
 // clean
-const clean = dir => {
-  return del([dir]);
-};
+const clean = dir => del([dir]);
 
 // *********** DEVELOPMENT TASK ***********
 
