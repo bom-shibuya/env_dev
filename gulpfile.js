@@ -10,11 +10,12 @@
  */
 
 // module import
-const gulp = require('gulp');
+const { src, dest, series, parallel, watch } = require('gulp');
 const browserSync = require('browser-sync');
 const insert = require('gulp-insert');
 const plumber = require('gulp-plumber');
 const gulpEjs = require('gulp-ejs');
+const gulpRename = require('gulp-rename');
 const imagemin = require('gulp-imagemin');
 const sass = require('gulp-sass');
 const sassGlob = require('gulp-sass-glob');
@@ -41,7 +42,7 @@ const clean = dir => {
 // *********** DEVELOPMENT TASK ***********
 
 // browserSync
-const devServer = async () => {
+const devServer = done => {
   browserSync.init({
     server: {
       baseDir: DIR.DEST
@@ -52,17 +53,17 @@ const devServer = async () => {
       scroll: false
     }
   });
+  done();
 };
 
-const reload = async fn => {
-  await fn();
+const reload = done => {
   browserSync.reload();
+  done();
 };
 
 // sass
 const styles = () =>
-  gulp
-    .src(`${DIR.SRC_ASSETS}sass/**/*.{sass,scss}`)
+  src(`${DIR.SRC_ASSETS}sass/**/*.{sass,scss}`)
     .pipe(sourcemaps.init())
     .pipe(plumber())
     .pipe(sassGlob())
@@ -82,34 +83,26 @@ const styles = () =>
       })
     )
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest(`${DIR.DEST_ASSETS}css`));
+    .pipe(dest(`${DIR.DEST_ASSETS}css`));
 
 // js
 const scripts = () =>
-  gulp
-    .src(`${DIR.SRC_ASSETS}js/**/*.js`)
+  src(`${DIR.SRC_ASSETS}js/**/*.js`)
     .pipe(plumber())
     .pipe(webpackStream(webpackConfig.dev, webpack))
-    .pipe(gulp.dest(`${DIR.DEST_ASSETS}js`));
+    .pipe(dest(`${DIR.DEST_ASSETS}js`));
 
 // ejs include
 const ejs = () =>
-  gulp
-    .src([`${DIR.SRC}**/*.ejs`, `!${DIR.SRC}_inc/**/*.ejs`])
+  src([`${DIR.SRC}**/*.ejs`, `!${DIR.SRC}_inc/**/*.ejs`])
     .pipe(plumber())
-    .pipe(
-      gulpEjs(
-        { INC: Path.resolve(__dirname, `${DIR.SRC}_inc`) + '/' },
-        {},
-        { ext: '.html' }
-      )
-    )
-    .pipe(gulp.dest(DIR.DEST));
+    .pipe(gulpEjs({ INC: Path.resolve(__dirname, `${DIR.SRC}_inc`) + '/' }))
+    .pipe(gulpRename({ extname: '.html' }))
+    .pipe(dest(DIR.DEST));
 
 // imageMin
 const imageMin = () =>
-  gulp
-    .src(`${DIR.SRC_ASSETS}img/**/*`)
+  src(`${DIR.SRC_ASSETS}img/**/*`)
     .pipe(
       imagemin(
         [
@@ -124,30 +117,32 @@ const imageMin = () =>
         { verbose: true }
       )
     )
-    .pipe(gulp.dest(`${DIR.DEST_ASSETS}img`));
+    .pipe(dest(`${DIR.DEST_ASSETS}img`));
 
 // watch
-const watch = async () => {
-  gulp.watch(`${DIR.SRC}**/*.ejs`, reload.bind(null, ejs));
-  gulp.watch(
-    `${DIR.SRC_ASSETS}sass/**/*.{sass,scss}`,
-    reload.bind(null, styles)
-  );
-  gulp.watch(`${DIR.SRC_ASSETS}js/**/*.js`, reload.bind(null, scripts));
+const watchEjs = () => watch(`${DIR.SRC}**/*.ejs`, series(ejs, reload));
+const watchSass = () =>
+  watch(`${DIR.SRC_ASSETS}sass/**/*.{sass,scss}`, series(styles, reload));
+const watchJs = () =>
+  watch(`${DIR.SRC_ASSETS}js/**/*.js`, series(scripts, reload));
+
+const watches = () => {
+  watchEjs();
+  watchSass();
+  watchJs();
 };
 
-const devTask = gulp.parallel(ejs, styles, scripts, imageMin);
+const devTask = parallel(ejs, styles, scripts, imageMin);
 
-const build = gulp.series(clean.bind(null, DIR.DEST), devTask);
+const build = series(clean.bind(null, DIR.DEST), devTask);
 
-const dev = gulp.series(build, devServer, watch);
+const dev = series(build, devServer, watches);
 
 // *********** RELEASE TASK ***********
 
 // css
 const releaseStyles = () =>
-  gulp
-    .src(`${DIR.DEST_ASSETS}css/*.css`)
+  src(`${DIR.DEST_ASSETS}css/*.css`)
     .pipe(
       please({
         sass: false,
@@ -157,28 +152,27 @@ const releaseStyles = () =>
       })
     )
     .pipe(insert.prepend(`/*! compiled at:${fmtdDate}*/\n`))
-    .pipe(gulp.dest(`${DIR.RELEASE_ASSETS}css`));
+    .pipe(dest(`${DIR.RELEASE_ASSETS}css`));
 
 // js conat
 const releaseScripts = () =>
   webpackStream(webpackConfig.prod, webpack).pipe(
-    gulp.dest(`${DIR.RELEASE_ASSETS}js`)
+    dest(`${DIR.RELEASE_ASSETS}js`)
   );
 
 // releaesへcopy
 const releaseImages = () =>
-  gulp
-    .src(`${DIR.DEST_ASSETS}img/**/*.{jpg,png,gif,svg,ico}`)
-    .pipe(gulp.dest(`${DIR.RELEASE_ASSETS}img`));
+  src(`${DIR.DEST_ASSETS}img/**/*.{jpg,png,gif,svg,ico}`).pipe(
+    dest(`${DIR.RELEASE_ASSETS}img`)
+  );
 
-const releaseHtml = () =>
-  gulp.src(`${DIR.DEST}**/*.html`).pipe(gulp.dest(DIR.RELEASE));
+const releaseHtml = () => src(`${DIR.DEST}**/*.html`).pipe(dest(DIR.RELEASE));
 
 // for release
 
-const release = gulp.series(
+const release = series(
   clean.bind(null, DIR.RELEASE),
-  gulp.parallel(releaseScripts, releaseImages, releaseHtml, releaseStyles)
+  parallel(releaseScripts, releaseImages, releaseHtml, releaseStyles)
 );
 
 module.exports = {
