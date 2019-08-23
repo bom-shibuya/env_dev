@@ -14,8 +14,6 @@ const gulp = require('gulp');
 const browserSync = require('browser-sync');
 const insert = require('gulp-insert');
 const plumber = require('gulp-plumber');
-const gulpPug = require('gulp-pug');
-const gulpFileinclude = require('gulp-file-include');
 const gulpEjs = require('gulp-ejs');
 const imagemin = require('gulp-imagemin');
 const sass = require('gulp-sass');
@@ -30,13 +28,7 @@ const del = require('del');
 const DIR = require('./DIR.js')();
 require('date-utils');
 
-// pug or fileinclude or ejs
-const HTML_TASK = 'ejs';
-
 // *********** COMMON METHOD ***********
-
-// html buildタスクの拡張子
-const htmlExpanded = HTML_TASK === 'fileinclude' ? 'html' : HTML_TASK;
 
 // 現在時刻の取得
 const fmtdDate = new Date().toFormat('YYYY-MM-DD HH24MISS');
@@ -100,32 +92,6 @@ const scripts = () =>
     .pipe(webpackStream(webpackConfig.dev, webpack))
     .pipe(gulp.dest(`${DIR.DEST_ASSETS}js`));
 
-// html include
-const fileinclude = () =>
-  gulp
-    .src([`${DIR.SRC}**/*.html`, `!${DIR.SRC}_inc/**/*.html`])
-    .pipe(plumber())
-    .pipe(
-      gulpFileinclude({
-        prefix: '@@',
-        basepath: 'app/src/_inc'
-      })
-    )
-    .pipe(gulp.dest(DIR.DEST));
-
-// pug
-const pug = () =>
-  gulp
-    .src([`${DIR.SRC}**/*.pug`, `!${DIR.SRC}_inc`, `!${DIR.SRC}_inc/**/*.pug`])
-    .pipe(plumber())
-    .pipe(
-      gulpPug({
-        pretty: true,
-        basedir: DIR.SRC
-      })
-    )
-    .pipe(gulp.dest(DIR.DEST));
-
 // ejs include
 const ejs = () =>
   gulp
@@ -139,13 +105,6 @@ const ejs = () =>
       )
     )
     .pipe(gulp.dest(DIR.DEST));
-
-// bundle html task
-const html = {
-  ejs,
-  fileinclude,
-  pug
-};
 
 // imageMin
 const imageMin = () =>
@@ -169,10 +128,7 @@ const imageMin = () =>
 
 // watch
 const watch = async () => {
-  gulp.watch(
-    `${DIR.SRC}**/*.${htmlExpanded}`,
-    reload.bind(null, html[HTML_TASK])
-  );
+  gulp.watch(`${DIR.SRC}**/*.ejs`, reload.bind(null, ejs));
   gulp.watch(
     `${DIR.SRC_ASSETS}sass/**/*.{sass,scss}`,
     reload.bind(null, styles)
@@ -180,7 +136,7 @@ const watch = async () => {
   gulp.watch(`${DIR.SRC_ASSETS}js/**/*.js`, reload.bind(null, scripts));
 };
 
-const devTask = gulp.parallel(html[HTML_TASK], styles, scripts, imageMin);
+const devTask = gulp.parallel(ejs, styles, scripts, imageMin);
 
 const build = gulp.series(clean.bind(null, DIR.DEST), devTask);
 
@@ -230,7 +186,6 @@ module.exports = {
   scripts,
   imageMin,
   watch,
-  ...html,
   default: dev,
   build,
   releaseHtml,
