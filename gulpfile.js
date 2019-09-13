@@ -55,7 +55,7 @@ const devServer = done => {
 };
 
 const reload = done => {
-  browserSync.reload({ stream: true });
+  browserSync.reload();
   done();
 };
 
@@ -124,11 +124,7 @@ const watchSass = () =>
 const watchJs = () =>
   watch(`${DIR.SRC_ASSETS}js/**/*.js`, series(scripts, reload));
 
-const watches = () => {
-  watchEjs();
-  watchSass();
-  watchJs();
-};
+const watches = parallel(watchEjs, watchSass, watchJs);
 
 const devTask = parallel(ejs, styles, scripts, imageMin);
 
