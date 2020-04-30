@@ -67,7 +67,7 @@
     "@babel/polyfill": "^7.0.0",
     "gsap": "^2.0.2",
     "imagesloaded": "^4.1.1",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "tokyo-shibuya-reset": "https://github.com/bom-shibuya/TOKYO_SHIBUYA_RESET.git",
     "webfontloader": "^1.6.27"
   }
