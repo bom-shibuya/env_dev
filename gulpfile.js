@@ -59,15 +59,15 @@ const reload = (done) => {
   done();
 };
 
-// sass
+// scss
 const styles = () =>
-  src(`${DIR.SRC_ASSETS}sass/**/*.{sass,scss}`)
+  src(`${DIR.SRC_ASSETS}scss/**/*.{sass,scss}`)
     .pipe(sourcemaps.init())
     .pipe(plumber())
     .pipe(sassGlob())
     .pipe(
       sass({
-        includePaths: 'node_modules/tokyo-shibuya-reset/sass/',
+        includePaths: 'node_modules/tokyo-shibuya-reset/scss/',
         outputStyle: ':expanded',
       }).on('error', sass.logError)
     )

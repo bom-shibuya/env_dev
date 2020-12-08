@@ -200,11 +200,9 @@ ol {
   list-style: none;
   list-style-position: inside; }
 
-small, span {
+small,
+span {
   vertical-align: baseline; }
-
-body {
-  background-color: red; }
 
 @media screen and (max-width: 47.9375em){
   .sp-displayNone{
