@@ -35,26 +35,26 @@ require('date-utils');
 const fmtdDate = new Date().toFormat('YYYY-MM-DD HH24MISS');
 
 // clean
-const clean = dir => del([dir]);
+const clean = (dir) => del([dir]);
 
 // *********** DEVELOPMENT TASK ***********
 
 // browserSync
-const devServer = done => {
+const devServer = (done) => {
   browserSync.init({
     server: {
-      baseDir: DIR.DEST
+      baseDir: DIR.DEST,
     },
     ghostMode: {
       clicks: true,
       forms: true,
-      scroll: false
-    }
+      scroll: false,
+    },
   });
   done();
 };
 
-const reload = done => {
+const reload = (done) => {
   browserSync.reload();
   done();
 };
@@ -67,8 +67,8 @@ const styles = () =>
     .pipe(sassGlob())
     .pipe(
       sass({
-        includePaths: 'node_modules/tokyo-shibuya-reset',
-        outputStyle: ':expanded'
+        includePaths: 'node_modules/tokyo-shibuya-reset/sass/',
+        outputStyle: ':expanded',
       }).on('error', sass.logError)
     )
     .pipe(
@@ -77,7 +77,7 @@ const styles = () =>
         minifier: false,
         rem: false,
         pseudoElements: false,
-        mqpacker: true
+        mqpacker: true,
       })
     )
     .pipe(sourcemaps.write('./'))
@@ -106,11 +106,11 @@ const imageMin = () =>
         [
           imagemin.gifsicle({
             optimizationLevel: 3,
-            interlaced: true
+            interlaced: true,
           }),
-          imagemin.jpegtran({ progressive: true }),
+          imagemin.mozjpeg({ progressive: true }),
           imagemin.optipng({ optimizationLevel: 5 }),
-          imagemin.svgo({ removeViewBox: false })
+          imagemin.svgo({ removeViewBox: false }),
         ],
         { verbose: true }
       )
@@ -142,7 +142,7 @@ const releaseStyles = () =>
         sass: false,
         minifier: true,
         rem: false,
-        pseudoElements: false
+        pseudoElements: false,
       })
     )
     .pipe(insert.prepend(`/*! compiled at:${fmtdDate}*/\n`))
@@ -180,5 +180,5 @@ module.exports = {
   releaseImages,
   releaseScripts,
   releaseStyles,
-  release
+  release,
 };

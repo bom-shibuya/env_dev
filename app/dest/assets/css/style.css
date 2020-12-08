@@ -82,8 +82,12 @@ button,
 
 [type="range"],
 [type="checkbox"],
+[type="radio"],
 [type="file"] {
   -webkit-appearance: none; }
+
+fieldset {
+  border: none; }
 
 [type="search"] {
   -webkit-appearance: none; }
@@ -167,7 +171,6 @@ body {
 
 a {
   color: #000;
-  -webkit-transition: opacity 0.4s;
   transition: opacity 0.4s;
   text-decoration: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
@@ -199,6 +202,9 @@ ol {
 
 small, span {
   vertical-align: baseline; }
+
+body {
+  background-color: red; }
 
 @media screen and (max-width: 47.9375em){
   .sp-displayNone{

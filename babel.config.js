@@ -2,9 +2,9 @@ const presets = [
   [
     '@babel/env',
     {
-      modules: false
-    }
-  ]
+      modules: false,
+    },
+  ],
 ];
 
 module.exports = { presets };

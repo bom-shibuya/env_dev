@@ -19,23 +19,23 @@ const DIR = require('./DIR.js')('./');
  */
 const commonConfig = {
   entry: {
-    script: `${DIR.SRC_ASSETS}js/script.js`
+    script: `${DIR.SRC_ASSETS}js/script.js`,
   },
   output: {
-    filename: '[name].js'
+    filename: '[name].js',
   },
   resolve: {
     extensions: ['.js'],
-    modules: ['node_modules']
+    modules: ['node_modules'],
   },
   module: {
     rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel-loader'
-      }
-    ]
+        loader: 'babel-loader',
+      },
+    ],
   },
   plugins: [
     // jQueryをグローバルに出す
@@ -43,9 +43,9 @@ const commonConfig = {
       jQuery: 'jquery',
       $: 'jquery',
       jquery: 'jquery',
-      'window.jQuery': 'jquery'
-    })
-  ]
+      'window.jQuery': 'jquery',
+    }),
+  ],
 };
 
 /**
@@ -53,7 +53,7 @@ const commonConfig = {
  */
 const devConfig = {
   ...commonConfig,
-  mode: 'development'
+  mode: 'development',
 };
 
 /**
@@ -61,10 +61,10 @@ const devConfig = {
  */
 const prodConfig = {
   ...commonConfig,
-  mode: 'production'
+  mode: 'production',
 };
 
 module.exports = {
   dev: devConfig,
-  prod: prodConfig
+  prod: prodConfig,
 };
